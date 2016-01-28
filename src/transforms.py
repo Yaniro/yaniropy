@@ -37,6 +37,8 @@ class RotationMatrix(object):
         R = np.asmatrix(A, np.float64)
         if R.shape == self.rotation_matrix.shape:
             self._rotation_matrix = R
+        else:
+            raise ValueError("Param given is not {0}".format(self.rotation_matrix.shape))
 
 
 # Convenience classes for safe use of proper matrix and vector sizes
@@ -86,6 +88,8 @@ class TranslationVector(object):
         tr = np.asmatrix(t, np.float64)
         if tr.shape == self.translation_vector.shape:
             self._translation_vector = tr
+        else:
+            raise ValueError("Param given is not {0}".format(self.translation_vector.shape))
 
 
 # Convenience classes for safe use of proper matrix and vector sizes
@@ -160,6 +164,8 @@ class Transform(object):
     def r(self, r):
         if r.rotation_matrix.shape == self.r.rotation_matrix.shape:
             self._r = r
+        else:
+            raise ValueError("Param given is not {0}".format(self.r.rotation_matrix.shape))
 
     @property
     def t(self):
@@ -169,6 +175,8 @@ class Transform(object):
     def t(self, t):
         if t.translation_vector.shape == self.t.translation_vector.shape:
             self._t = t
+        else:
+            raise ValueError("Param given is not {0}".format(self.t.translation_vector.shape))
 
 
 # Convenience classes for safe use of proper matrix and vector sizes
