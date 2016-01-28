@@ -7,7 +7,7 @@ class RotationMatrix(object):
         self.base_frame = base_frame
         self.to_frame = to_frame
 
-        if not R:
+        if R == []:
             self._rotation_matrix = np.asmatrix(np.identity(n, np.float64))
         else:
             t = np.asmatrix(R, np.float64)
@@ -44,7 +44,7 @@ class RotationMatrix3D(RotationMatrix):
 
     def __init__(self, base_frame, to_frame, R=[]):
         super().__init__(base_frame, to_frame, n=3)
-        if R:
+        if R != []:
             if np.asmatrix(R).shape == (3, 3):
                 self._rotation_matrix = np.asmatrix(R, np.float64)
             else:
@@ -55,7 +55,7 @@ class RotationMatrix2D(RotationMatrix):
 
     def __init__(self, base_frame, to_frame, R=[]):
         super().__init__(base_frame, to_frame, n=2)
-        if R:
+        if R != []:
             if np.asmatrix(R).shape == (2, 2):
                 self._rotation_matrix = np.asmatrix(R, np.float64)
             else:
@@ -66,10 +66,10 @@ class TranslationVector(object):
 
     def __init__(self, base_frame, t=[], n=4):
         self.base_frame = base_frame
-        if t:
+        if t != []:
             self._translation_vector = np.asmatrix(t, np.float64)
         else:
-            self._translation_vector = np.asmatrix(np.zeros(n, 1), np.float64)
+            self._translation_vector = np.asmatrix(np.zeros([n, 1], np.float64))
 
     def __add__(self, t):
         if hasattr(t, 'translation'):
@@ -93,7 +93,7 @@ class Translation3D(TranslationVector):
 
     def __init__(self, base_frame, t=[]):
         super().__init__(base_frame, n=3)
-        if t:
+        if t != []:
             tr = np.asmatrix(t, np.float64)
             if tr.shape == (3, 1):
                 self._translation_vector = tr
@@ -105,7 +105,7 @@ class Translation2D(TranslationVector):
 
     def __init__(self, base_frame, t=[]):
         super().__init__(base_frame, n=2)
-        if t:
+        if t != []:
             tr = np.asmatrix(t, np.float64)
             if tr.shape == (2, 1):
                 self._translation_vector = np.asmatrix(t, np.float64)
@@ -115,30 +115,28 @@ class Translation2D(TranslationVector):
 
 class Transform(object):
 
-    def __init__(self, rotation, translation_vector):
+    def __init__(self, rotation, translation):
         r = np.asmatrix(rotation.rotation_matrix)
         r_shape = r.shape
-        t = np.asmatrix(translation_vector.translation_vector)
+        t = np.asmatrix(translation.translation_vector)
 
         # Sanity checks
         if r_shape[0] != t.shape[0]:
-            raise ValueError("Rotation Matrix and Translation Vector \
-                              have different number of rows")
+            raise ValueError("Rotation Matrix and Translation Vector have different number of rows")
 
-        if rotation.base_frame != translation_vector.base_frame:
-            raise ValueError("Rotation Matrix and Translation Vector \
-                              have different base frames")
+        if rotation.base_frame != translation.base_frame:
+            raise ValueError("Rotation Matrix and Translation Vector have different base frames")
 
-        self.base_frame = r.base_frame
-        self.to_frame = r.to_frame
+        self.base_frame = rotation.base_frame
+        self.to_frame = rotation.to_frame
         # Used short form of rotation and translation to avoid later on
         # having something like: self.rotation_matrix.rotation_matrix
         # and because we are using block matrices instead of a
         # regular transform matrix with last row consisting of zeros and
         # one 1 (Scale and shape transforms are not needed) to make things
         # faster to calculate.
-        self._r = r
-        self._t = t
+        self._r = rotation
+        self._t = translation
 
     def __mul__(self, point):
         '''
@@ -160,7 +158,7 @@ class Transform(object):
 
     @r.setter
     def r(self, r):
-        if r.shape == self.r.shape:
+        if r.rotation_matrix.shape == self.r.rotation_matrix.shape:
             self._r = r
 
     @property
@@ -169,7 +167,7 @@ class Transform(object):
 
     @t.setter
     def t(self, t):
-        if t.shape == self.t.shape:
+        if t.translation_vector.shape == self.t.translation_vector.shape:
             self._t = t
 
 
@@ -178,8 +176,7 @@ class Transform3D(Transform):
 
     def __init__(self, rotation, translation):
         if rotation.rotation_matrix.shape != (3, 3):
-            raise ValueError("A 3D Transformation Matrix has to have a \
-                              3x3 Rotation Matrix and 3x1 Translation Vector")
+            raise ValueError("A 3D Transformation Matrix has to be a 3x3 Rotation Matrix and 3x1 Translation Vector")
 
         super().__init__(rotation, translation)
 
@@ -188,8 +185,7 @@ class Transform2D(Transform):
 
     def __init__(self, rotation, translation):
         if rotation.rotation_matrix.shape != (2, 2):
-            raise ValueError("A 2D Transformation Matrix has to have a \
-                              2x2 Rotation Matrix and 2x1 Translation Vector")
+            raise ValueError("A 2D Transformation Matrix has to be a 2x2 Rotation Matrix and 2x1 Translation Vector")
 
         super().__init__(rotation, translation)
 
@@ -217,6 +213,6 @@ def compose_transforms(*args):
         r = r * tr.r.rotation_matrix
         t = r * tr.t.translation_vector + t
 
-    new_r = RotationMatrix(base_frame, to_frame, r)
+    new_r = RotationMatrix(base_frame, to_frame, np.asarray(r))
     new_t = TranslationVector(base_frame, t)
     return Transform(new_r, new_t)
