@@ -3,11 +3,11 @@ import numpy as np
 
 class RotationMatrix(object):
 
-    def __init__(self, base_frame, to_frame, R=[], n=4):
+    def __init__(self, base_frame, to_frame, R=None, n=4):
         self.base_frame = base_frame
         self.to_frame = to_frame
 
-        if R == []:
+        if R is None:
             self._rotation_matrix = np.asmatrix(np.identity(n, np.float64))
         else:
             t = np.asmatrix(R, np.float64)
@@ -44,9 +44,9 @@ class RotationMatrix(object):
 # Convenience classes for safe use of proper matrix and vector sizes
 class RotationMatrix3D(RotationMatrix):
 
-    def __init__(self, base_frame, to_frame, R=[]):
+    def __init__(self, base_frame, to_frame, R=None):
         super().__init__(base_frame, to_frame, n=3)
-        if R != []:
+        if R is not None:
             if np.asmatrix(R).shape == (3, 3):
                 self._rotation_matrix = np.asmatrix(R, np.float64)
             else:
@@ -57,7 +57,7 @@ class RotationMatrix2D(RotationMatrix):
 
     def __init__(self, base_frame, to_frame, R=[]):
         super().__init__(base_frame, to_frame, n=2)
-        if R != []:
+        if R is not None:
             if np.asmatrix(R).shape == (2, 2):
                 self._rotation_matrix = np.asmatrix(R, np.float64)
             else:
@@ -66,9 +66,9 @@ class RotationMatrix2D(RotationMatrix):
 
 class TranslationVector(object):
 
-    def __init__(self, base_frame, t=[], n=4):
+    def __init__(self, base_frame, t=None, n=4):
         self.base_frame = base_frame
-        if t != []:
+        if t is not None:
             self._translation_vector = np.asmatrix(t, np.float64)
         else:
             self._translation_vector = np.asmatrix(np.zeros([n, 1], np.float64))
@@ -107,9 +107,9 @@ class Translation3D(TranslationVector):
 
 class Translation2D(TranslationVector):
 
-    def __init__(self, base_frame, t=[]):
+    def __init__(self, base_frame, t=None):
         super().__init__(base_frame, n=2)
-        if t != []:
+        if t is not None:
             tr = np.asmatrix(t, np.float64)
             if tr.shape == (2, 1):
                 self._translation_vector = np.asmatrix(t, np.float64)

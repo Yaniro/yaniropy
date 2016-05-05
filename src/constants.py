@@ -16,12 +16,14 @@ YANIRO_FAMILY = (YANIRO_S, YANIRO_M, YANIRO_L, YANIRO_SCARA)
 MASTER_SLAVE = "master slave"
 BEAGLEBOARD = "beagleboard"
 RASPERRY_PI = "rasperry pi"
-CONFIGURATIONS = (MASTER_SLAVE, BEAGLEBOARD, RASPERRY_PI)
+CONFIGURATIONS = (MASTER_SLAVE, BEAGLEBOARD, RASPERRY_PI,)
 
 
-LINEAR_JOINT = "linear joint"
-ROTATIONAL_JOINT = "rotational joint"
-JOINT_TYPES = (LINEAR_JOINT, ROTATIONAL_JOINT)
+# Joints types & aliases
+PRISMATIC = "prismatic"
+REVOLUTE = "revolute"
+SPHERICAL = "spherical"
+JOINT_TYPES = (PRISMATIC, REVOLUTE, SPHERICAL,)
 
 # Common joint names
 SHOULDER = "shoulder"
@@ -31,6 +33,22 @@ WRIST = "wrist"
 WRIST_ROLL = "wrist roll"
 WRIST_YAW = "wrist yaw"
 GRIPPER = "gripper"
+
+# Axis & angles indexes for end effector pose vector
+X = 0
+Y = 1
+Z = 2
+ALPHA = ROLL = 3
+BETA = YAW = 4
+GAMMA = PITCH = 5
+AXES = [X, Y, Z]
+
+
+# Actuators
+SERVO = "servo"
+STEPPER = "stepper"
+DC = "dc"
+ACTUATORS = (SERVO, STEPPER, DC,)
 
 
 # Yaniro design
